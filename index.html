@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LEGO Directions Finder</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <header>
+    <h1>LEGO Directions Finder</h1>
+    <div id="search-container">
+      <input type="text" id="search-bar" placeholder="Enter LEGO set number..." />
+      <button onclick="searchDirections()">Search</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="directions-results">
+      <!-- Default message before search -->
+      <p>Search for a LEGO set above to find its building instructions.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Find your favorite LEGO instructions here!</p>
+  </footer>
+
+  <script>
+    function searchDirections() {
+      const setNumber = document.getElementById('search-bar').value.trim();
+      const resultsSection = document.getElementById('directions-results');
+
+      resultsSection.innerHTML = ''; // Clear previous results
+
+      if (!setNumber) {
+        resultsSection.innerHTML = '<p>Please enter a valid LEGO set number.</p>';
+        return;
+      }
+
+      // Simulated local lookup
+      const instructionUrl = `/instructions/${setNumber}.pdf`; // Adjust based on your folder setup
+
+      fetch(instructionUrl)
+        .then(response => {
+          if (response.ok) {
+            resultsSection.innerHTML = `
+              <p>Instructions for LEGO set <strong>${setNumber}</strong>:</p>
+              <a href="${instructionUrl}" target="_blank">Download Instructions</a>
+            `;
+          } else {
+            resultsSection.innerHTML = `<p>No instructions found for set <strong>${setNumber}</strong>.</p>`;
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching instructions:', error);
+          resultsSection.innerHTML = `<p>Unable to fetch instructions. Please try again later.</p>`;
+        });
+    }
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(registration => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        })
+        .catch(error => {
+          console.error('Service Worker registration failed:', error);
+        });
+    }
+  </script>
+</body>
+</html>
